@@ -1,5 +1,8 @@
 %{
 #include <string.h>
+#include <stdlib.h>  // Asegúrate de incluir esta biblioteca para malloc y free
+#include <stdio.h>
+
 # define INT 1
 # define ID 2
 # define IF 3
@@ -18,75 +21,74 @@
 # define LT 16
 # define ASSIGN 17
 
-
-
-typedef union  {
-	int pos;
-	int ival;
-	char* sval;
+typedef union {
+    int pos;
+    int ival;
+    char* sval;
 } YYSTYPE;
 
 YYSTYPE yylval;
 
 char* Cadena(char *s)
 {
-    char* p = (char*) malloc(strlen(s)+1);
-    strcpy(p,s);
+    char* p = (char*) malloc(strlen(s) + 1);
+    strcpy(p, s);
     return p;
 }
 
 %}
 
-
 /* lex definitions */
 digits [0-9]+
 %%
 
-[ \r\t] {continue;}
+[ \r\t] { /* Ignorar espacios, tabulaciones y retornos de carro */ }
 
    /* reserved words */
-
-if          {return IF;}
-else        {return ELSE;}
-while       {ECHO; return WHILE;}
-for  	    {return FOR;}
-do          {return DOWHILE;}
-swicthcase  {return SWITCHCASE;}
-dowhile     {return DOWHILE;}
-
+if          { printf("Token IF\n"); return IF; }
+else        { printf("Token ELSE\n"); return ELSE; }
+while       { printf("Token WHILE\n"); return WHILE; }
+for         { printf("Token FOR\n"); return FOR; }
+do          { printf("Token DOWHILE\n"); return DOWHILE; }
+switchcase  { printf("Token SWITCHCASE\n"); return SWITCHCASE; }
+dowhile     { printf("Token DOWHILE\n"); return DOWHILE; }
 
    /* punctuations */
-":" {return COLON;}
-"(" {return LPAREN;}
-")" {return RPAREN;}
-"<" {return LT;}
-"=>" {ECHO; return ASSIGN;}
-
+":" { printf("Token COLON\n"); return COLON; }
+"(" { printf("Token LPAREN\n"); return LPAREN; }
+")" { printf("Token RPAREN\n"); return RPAREN; }
+"<" { printf("Token LT\n"); return LT; }
+"=>" { printf("Token ASSIGN\n"); return ASSIGN; }
 
    /* aritmetic */
-"+" {return PLUS;}
-"-" {return MINUS;}
-"*" {return MULTIPLY;}
-"/" {return DIVIDE;}
-
+"+" { printf("Token PLUS\n"); return PLUS; }
+"-" { printf("Token MINUS\n"); return MINUS; }
+"*" { printf("Token MULTIPLY\n"); return MULTIPLY; }
+"/" { printf("Token DIVIDE\n"); return DIVIDE; }
 
    /* Identifiers. */
-[_a-zA-Z][a-zA-Z0-9]* {yylval.sval=Cadena(yytext); return ID;}
-
+[_a-zA-Z][a-zA-Z0-9]* {
+    yylval.sval = Cadena(yytext);
+    printf("Token ID: %s\n", yylval.sval);
+    return ID;
+}
 
    /* integers */
-
-{digits}	 {yylval.ival=atoi(yytext); ECHO; return INT;}
-
+{digits} {
+    yylval.ival = atoi(yytext);
+    printf("Token INT: %d\n", yylval.ival);
+    return INT;
+}
 
    /* Cualquier otra cosa */
-.	 { printf("\nToken desconocido: '%s'.\n", yytext); }
-
+. {
+    printf("Token desconocido: '%s'.\n", yytext);
+}
 
 %%
 
 /* Este main es solamente de prueba.
-    Más adelante, este mian lo hará Yacc 
+    Más adelante, este main lo hará Yacc 
 */
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -95,7 +97,13 @@ int main(int argc, char *argv[]) {
     }
     yyin = fopen(argv[1], "r");
 
-    while(yylex());
+    if (!yyin) {
+        perror("Error al abrir el archivo");
+        return 1;
+    }
+
+    while (yylex());
 
     fclose(yyin);
+    return 0;
 }
