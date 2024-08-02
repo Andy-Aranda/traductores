@@ -59,12 +59,15 @@ dowhile     {return DOWHILE;}
 ":" {return COLON;}
 "(" {return LPAREN;}
 ")" {return RPAREN;}
+"<" {return LT;}
+"=>" {return ASSIGN;}
+
+
+   /* aritmetic */
 "+" {return PLUS;}
 "-" {return MINUS;}
 "*" {return MULTIPLY;}
 "/" {return DIVIDE;}
-"<" {return LT;}
-"=>" {return ASSIGN;}
 
 
    /* Identifiers. */
