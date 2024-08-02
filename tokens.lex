@@ -60,7 +60,7 @@ dowhile     {return DOWHILE;}
 "(" {return LPAREN;}
 ")" {return RPAREN;}
 "<" {return LT;}
-"=>" {return ASSIGN;}
+"=>" {ECHO; return ASSIGN;}
 
 
    /* aritmetic */
@@ -76,7 +76,7 @@ dowhile     {return DOWHILE;}
 
    /* integers */
 
-{digits}	 {yylval.ival=atoi(yytext); return INT;}
+{digits}	 {yylval.ival=atoi(yytext); ECHO; return INT;}
 
 
    /* Cualquier otra cosa */
